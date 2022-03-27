@@ -27,7 +27,7 @@ do
       BAMFILE=Sample_HSTAMP0${i}-T1_Tumor
     fi
   fi
-  SAMTOOLSBAMLIST+=("${SAMTOOLSBAMDIR}/${SAMTOOLSBAMFILE}.sorted.samtools-deduped.sorted.bam")
+  SAMTOOLSBAMLIST+=("${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam")
   BARCODEBAMLIST+=("${BARCODEBAMDIR}/${BAMFILE}.singleindex-deduped.sorted.bam")
 done
 # Generate the `baits.target.bed` and `baits.antitarget.bed` files using `baits.bed` being provided
