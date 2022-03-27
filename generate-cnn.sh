@@ -10,16 +10,19 @@ do
   # Create dir and file variables according to the bam file name (need for different number of zeros)
   if [ $i -lt 10 ]
   then
-    BAMDIR=${DATADIR}/HSTAMP000$i/demultiplexed/Sample_HSTAMP000${i}-T1_Tumor
-    BAMFILE=Sample_HSTAMP000${i}-T1_Tumor.sorted.samtools-deduped.sorted
+    SAMTOOLSBAMDIR=${DATADIR}/HSTAMP000$i/demultiplexed/Sample_HSTAMP000${i}-T1_Tumor
+    BARCODEBAMDIR=${DATADIR}/HSTAMP000$i/demultiplexed/barcode-deduped/tumor
+    BAMFILE=Sample_HSTAMP000${i}-T1_Tumor
   else
     if [ $i -lt 100 ]
     then
-      BAMDIR=${DATADIR}/HSTAMP00$i/demultiplexed/Sample_HSTAMP00${i}-T1_Tumor
-      BAMFILE=Sample_HSTAMP00${i}-T1_Tumor.sorted.samtools-deduped.sorted
+      SAMTOOLSBAMDIR=${DATADIR}/HSTAMP00$i/demultiplexed/Sample_HSTAMP00${i}-T1_Tumor
+      BARCODEBAMDIR=${DATADIR}/HSTAMP00$i/demultiplexed/barcode-deduped/tumor
+      BAMFILE=Sample_HSTAMP00${i}-T1_Tumor
     else
-      BAMDIR=${DATADIR}/HSTAMP0$i/demultiplexed/Sample_HSTAMP0${i}-T1_Tumor
-      BAMFILE=Sample_HSTAMP0${i}-T1_Tumor.sorted.samtools-deduped.sorted
+      SAMTOOLSBAMDIR=${DATADIR}/HSTAMP0$i/demultiplexed/Sample_HSTAMP0${i}-T1_Tumor
+      BARCODEBAMDIR=${DATADIR}/HSTAMP0$i/demultiplexed/barcode-deduped/tumor
+      BAMFILE=Sample_HSTAMP0${i}-T1_Tumor
     fi
   fi
   if [ $i -lt $NORMALSTART ]
@@ -29,6 +32,10 @@ do
     OUTDIR="results-cnn-normal"
   fi
   # For each sample...
-  cnvkit.py coverage ${BAMDIR}/${BAMFILE}.bam baits.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.targetcoverage.cnn
-  cnvkit.py coverage ${BAMDIR}/${BAMFILE}.bam baits.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.antitargetcoverage.cnn
+  # Use samtools-deduped bams
+  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.targetcoverage.cnn
+  # Use barcode-deduped bams
+  cnvkit.py coverage ${BARCODEBAMDIR}/${BAMFILE}.singleindex-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.barcode.targetcoverage.cnn
+  # Always use samtools-deduped off-target bams
+  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.smatools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
 done
