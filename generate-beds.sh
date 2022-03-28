@@ -35,10 +35,10 @@ done
 # Output: `baits.target.bed` and `baits.antitarget.bed`
 cnvkit.py autobin ${SAMTOOLSBAMLIST[@]} -t ${WRKDIR}/baits.bed -g ${WRKDIR}/access.hg19.bed
 # Tag the outputs with samtools
-mv baits.target.bed baits.samtools.target.bed
-mv baits.antitarget.bed baits.samtools.antitarget.bed
+mv baits.target.bed ${WRKDIR}/baits.samtools.target.bed
+mv baits.antitarget.bed ${WRKDIR}/baits.samtools.antitarget.bed
 # Output: `baits.target.bed` and `baits.antitarget.bed`
 cnvkit.py autobin ${BARCODEBAMLIST[@]} -t ${WRKDIR}/baits.bed -g ${WRKDIR}/access.hg19.bed
 # Tag the outputs with samtools
-mv baits.target.bed baits.barcode.target.bed
-mv baits.antitarget.bed baits.barcode.antitarget.bed
+mv baits.target.bed ${WRKDIR}/baits.barcode.target.bed
+mv baits.antitarget.bed ${WRKDIR}/baits.barcode.antitarget.bed

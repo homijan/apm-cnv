@@ -5,7 +5,7 @@ WRKDIR=$PWD
 DATADIR="/drive3/dkurtz/HEMESTAMP"
 # Loop over HEMESTAMP labels. Tumor samples < 201 -> WRKDIR/results-cnn-tumor, Normal samples >=201 -> WRKDIR/results-cnn-normal
 NORMALSTART=201
-for i in {86..251}
+for i in {1..251}
 do
   # Create dir and file variables according to the bam file name (need for different number of zeros)
   if [ $i -lt 10 ]
@@ -37,5 +37,5 @@ do
   # Use barcode-deduped bams
   cnvkit.py coverage ${BARCODEBAMDIR}/${BAMFILE}.singleindex-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.barcode.targetcoverage.cnn
   # Always use samtools-deduped off-target bams
-  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.smatools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
+  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
 done
