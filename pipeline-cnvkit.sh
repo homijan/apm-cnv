@@ -18,13 +18,13 @@ ln -s /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.add500bp.bed baits.bed
 mkdir results-cnn-tumor 
 mkdir results-cnn-normal
 ./generate-cnn.sh | tee generate-cnn.out
-# Generate a pooled normal references from all normal samples called `my_reference.cnn`
-#TBR*
-#cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{,anti}targetcoverage.cnn --fasta ${WRKDIR}/hg19.fa -o #${WRKDIR}/my_reference.cnn
-#*TBR
-# TODO: Is it ok to use all coverage cnn files? 
-# *.samtools.antitargetcoverage.cnn + *.samtools.targetcoverage.cnn + *.barcode.targetcoverage.cnn ?
-cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.cnn
+# Generate a pooled normal references from all normal samples. Prepare two sets for comparison
+# First use both samtools target and antitarget for `my_reference.samtools.cnn` 
+# *.samtools.antitargetcoverage.cnn + *.samtools.targetcoverage.cnn
+cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.samtools.{coverage,antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.samtools.cnn
+# Second use barcode target and samtools antitarget for `my_reference.barcode.cnn`
+# *.samtools.antitargetcoverage.cnn + *.barcode.targetcoverage.cnn
+cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{barcode.targetcoverage,samtools.antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.barcode.cnn
 # Loop over the tumor.cnn samples
 for i in ${WRKDIR}/results-cnn-tumor/*.samtools.antitargetcoverage.cnn
 do
@@ -33,14 +33,14 @@ do
   echo "Working on sample: $SAMPLE"
   ## First using samtools-deduped on-target data
   # For each tumor sample...
-  cnvkit.py fix ${SAMPLE}.samtools.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn my_reference.cnn -o ${SAMPLE}.samtools.cnr
+  cnvkit.py fix ${SAMPLE}.samtools.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn ${WRKDIR}/my_reference.samtools.cnn -o ${SAMPLE}.samtools.cnr
   cnvkit.py segment ${SAMPLE}.samtools.cnr -o ${SAMPLE}.samtools.cns
   # Optionally, with --scatter and --diagram
   cnvkit.py scatter ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-scatter.samtools.pdf
   cnvkit.py diagram ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-diagram.samtools.pdf
   ## Second using barcode-deduped on-target data
   # For each tumor sample...
-  cnvkit.py fix ${SAMPLE}.barcode.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn my_reference.cnn -o ${SAMPLE}.barcode.cnr
+  cnvkit.py fix ${SAMPLE}.barcode.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn ${WRKDIR}/my_reference.barcode.cnn -o ${SAMPLE}.barcode.cnr
   cnvkit.py segment ${SAMPLE}.barcode.cnr -o ${SAMPLE}.barcode.cns
   # Optionally, with --scatter and --diagram
   cnvkit.py scatter ${SAMPLE}.barcode.cnr -s ${SAMPLE}.barcode.cns -o ${SAMPLE}-scatter.barcode.pdf
