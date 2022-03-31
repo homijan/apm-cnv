@@ -35,7 +35,7 @@ do
   # Use samtools-deduped bams
   cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.targetcoverage.cnn
   # Use barcode-deduped bams
-  cnvkit.py coverage ${BARCODEBAMDIR}/${BAMFILE}.singleindex-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.barcode.targetcoverage.cnn
+  cnvkit.py coverage ${BARCODEBAMDIR}/${BAMFILE}.singleindex-deduped.sorted.bam baits.barcode.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.barcode.targetcoverage.cnn
   # Always use samtools-deduped off-target bams
   cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
 done
