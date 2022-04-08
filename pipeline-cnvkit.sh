@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run `./pipeline-cnvkit.sh < /dev/null &`
 # Directory for cnvkit computations
 WRKDIR=$PWD
 echo "Working in $WRKDIR"
@@ -24,7 +25,7 @@ mkdir results-cnn-normal
 cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.samtools.{targetcoverage,antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.samtools.cnn
 # Second use barcode target and samtools antitarget for `my_reference.barcode.cnn`
 # *.samtools.antitargetcoverage.cnn + *.barcode.targetcoverage.cnn
-cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{barcode.targetcoverage,samtools.antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.barcode.cnn
+cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{barcode.targetcoverage,samtools.antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.barcode-samtools.cnn
 # Loop over the tumor.cnn samples
 for i in ${WRKDIR}/results-cnn-tumor/*.samtools.antitargetcoverage.cnn
 do
@@ -42,13 +43,13 @@ do
   fi
   ## Second using barcode-deduped on-target data
   # For each tumor sample...
-  if [ ! -f ${SAMPLE}.barcode.cnr ]; then
+  if [ ! -f ${SAMPLE}.barcode-samtools.cnr ]; then
     # Make a barcode.antitarget.cnn link using the samtools generated off-target cnn
     ln -s ${SAMPLE}.samtools.antitargetcoverage.cnn ${SAMPLE}.barcode.antitargetcoverage.cnn
-    cnvkit.py fix ${SAMPLE}.barcode.targetcoverage.cnn ${SAMPLE}.barcode.antitargetcoverage.cnn ${WRKDIR}/my_reference.barcode.cnn -o ${SAMPLE}.barcode.cnr
-    cnvkit.py segment ${SAMPLE}.barcode.cnr -o ${SAMPLE}.barcode.cns
+    cnvkit.py fix ${SAMPLE}.barcode.targetcoverage.cnn ${SAMPLE}.barcode.antitargetcoverage.cnn ${WRKDIR}/my_reference.barcode-samtools.cnn -o ${SAMPLE}.barcode-samtools.cnr
+    cnvkit.py segment ${SAMPLE}.barcode.cnr -o ${SAMPLE}.barcode-samtools.cns
     # Optionally, with --scatter and --diagram
-    cnvkit.py scatter ${SAMPLE}.barcode.cnr -s ${SAMPLE}.barcode.cns -o ${SAMPLE}-scatter.barcode.pdf
-    cnvkit.py diagram ${SAMPLE}.barcode.cnr -s ${SAMPLE}.barcode.cns -o ${SAMPLE}-diagram.barcode.pdf
+    cnvkit.py scatter ${SAMPLE}.barcode-samtools.cnr -s ${SAMPLE}.barcode-samtools.cns -o ${SAMPLE}-scatter.barcode-samtools.pdf
+    cnvkit.py diagram ${SAMPLE}.barcode-samtools.cnr -s ${SAMPLE}.barcode-samtools.cns -o ${SAMPLE}-diagram.barcode-samtools.pdf
   fi
 done
