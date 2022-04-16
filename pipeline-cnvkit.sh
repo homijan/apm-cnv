@@ -21,24 +21,41 @@ mkdir results-cnn-tumor
 mkdir results-cnn-normal
 ./generate-cnn.sh
 # Generate a pooled normal references from all normal samples. 
-# Use barcode target and samtools antitarget for `my_reference.barcode-samtools.cnn`
-# *.samtools.antitargetcoverage.cnn + *.barcode.targetcoverage.cnn
-cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{barcode.targetcoverage,samtools.antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.barcode-samtools.cnn
-# Loop over the tumor.cnn samples
+# Use samtools-deduped target and antitarget for `my_reference.samtools.cnn`
+cnvkit.py reference ${WRKDIR}/results-cnn-normal/*.{targetcoverage,antitargetcoverage}.cnn --fasta ${WRKDIR}/hg19.fa -o ${WRKDIR}/my_reference.samtools.cnn
+
+# Genereate CNV output for tumor.cnn samples
+# Loop over all *.cnn in the results dir of tumors
 for i in ${WRKDIR}/results-cnn-tumor/*.samtools.antitargetcoverage.cnn
 do
   # Trim the string to get a root name of the sample
   SAMPLE="$(echo $i | sed 's/.samtools.antitargetcoverage.cnn//g')"
   echo "Working on sample: $SAMPLE"
-  ##  Using barcode-deduped on-target data and samtools-deduped off-target data
+  ##  Using samtools-deduped on-target and off-target data
   # For each tumor sample...
-  if [ ! -f ${SAMPLE}.barcode-samtools.cnr ]; then
-    # Make a barcode.antitarget.cnn link using the samtools generated off-target cnn
-    ln -s ${SAMPLE}.samtools.antitargetcoverage.cnn ${SAMPLE}.barcode.antitargetcoverage.cnn
-    cnvkit.py fix ${SAMPLE}.barcode.targetcoverage.cnn ${SAMPLE}.barcode.antitargetcoverage.cnn ${WRKDIR}/my_reference.barcode-samtools.cnn -o ${SAMPLE}.barcode-samtools.cnr
-    cnvkit.py segment ${SAMPLE}.barcode.cnr -o ${SAMPLE}.barcode-samtools.cns
+  if [ ! -f ${SAMPLE}.samtools.cnr ]; then
+    cnvkit.py fix ${SAMPLE}.samtools.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn ${WRKDIR}/my_reference.samtools.cnn -o ${SAMPLE}.samtools.cnr
+    cnvkit.py segment ${SAMPLE}.samtools.cnr -o ${SAMPLE}.samtools.cns
     # Optionally, with --scatter and --diagram
-    cnvkit.py scatter ${SAMPLE}.barcode-samtools.cnr -s ${SAMPLE}.barcode-samtools.cns -o ${SAMPLE}-scatter.barcode-samtools.pdf
-    cnvkit.py diagram ${SAMPLE}.barcode-samtools.cnr -s ${SAMPLE}.barcode-samtools.cns -o ${SAMPLE}-diagram.barcode-samtools.pdf
+    cnvkit.py scatter ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-scatter.samtools.pdf
+    cnvkit.py diagram ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-diagram.samtools.pdf
+  fi
+done
+
+# Double-check CNV output for normal.cnn samples
+# Loop over all *.cnn in the results dir of normals
+for i in ${WRKDIR}/results-cnn-normal/*.samtools.antitargetcoverage.cnn
+do
+  # Trim the string to get a root name of the sample
+  SAMPLE="$(echo $i | sed 's/.samtools.antitargetcoverage.cnn//g')"
+  echo "Working on sample: $SAMPLE"
+  ##  Using samtools-deduped on-target and off-target data
+  # For each tumor sample...
+  if [ ! -f ${SAMPLE}.samtools.cnr ]; then
+    cnvkit.py fix ${SAMPLE}.samtools.targetcoverage.cnn ${SAMPLE}.samtools.antitargetcoverage.cnn ${WRKDIR}/my_reference.samtools.cnn -o ${SAMPLE}.samtools.cnr
+    cnvkit.py segment ${SAMPLE}.samtools.cnr -o ${SAMPLE}.samtools.cns
+    # Optionally, with --scatter and --diagram
+    cnvkit.py scatter ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-scatter.samtools.pdf
+    cnvkit.py diagram ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-diagram.samtools.pdf
   fi
 done
