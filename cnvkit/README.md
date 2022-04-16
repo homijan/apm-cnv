@@ -1,2 +1,2 @@
-# apm-cnvkit
+# apm-cnv
 The cnvkit pipeline for cfDNA
