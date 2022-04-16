@@ -30,7 +30,7 @@ do
   fi
   # For each sample...
   # Use samtools-deduped bams
-  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.targetcoverage.cnn
+  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam ${WRKDIR}/baits.samtools.target.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.targetcoverage.cnn
   # Always use samtools-deduped off-target bams
-  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam baits.samtools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
+  cnvkit.py coverage ${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam ${WRKDIR}/baits.samtools.antitarget.bed -o ${WRKDIR}/${OUTDIR}/${BAMFILE}.samtools.antitargetcoverage.cnn
 done
