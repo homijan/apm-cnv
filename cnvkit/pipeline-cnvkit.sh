@@ -11,8 +11,8 @@ ln -s /data/indexes/hg19.fa hg19.fa
 # Output: `access.hg19.bed`
 cnvkit.py access ${WRKDIR}/hg19.fa -o ${WRKDIR}/access.hg19.bed | tee access.out
 # Generate the target and antitarget.baits bed file using the `baits.bed` and all the samples
-# baits.bed -> /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.add500bp.bed
-ln -s /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.add500bp.bed baits.bed
+# baits.bed -> /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.bed
+ln -s /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.bed baits.bed
 # Output: `baits.target.bed` and `baits.antitarget.bed`
 ./generate-beds.sh | tee generate-beds.out
 # Generate cnn files from all the samples 
