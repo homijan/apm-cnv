@@ -15,7 +15,7 @@ do
   # Merge cytoban bed with *.cnr file
   bedtools intersect -a /drive3/janlukas/index/cytobands-noXY-noheader.txt -b ${NAME}.tmp.bed -wo > ${NAME}.tmp
   # summarize Median log2 on cytband level
-  Rscript /home/alizadehlab/palomino/PALOMINOdrive3/cnv-project/apm-cnvkit/sum_cnvkit-cnr_to_cytoband_log2.R ${NAME}.tmp ${NAME}.cytoban.Medianlog2.txt 
+  Rscript /home/alizadehlab/palomino/PALOMINOdrive3/cnv-project/apm-cnv/cnvkit/sum_cnvkit-cnr_to_cytoband_log2.R ${NAME}.tmp ${NAME}.cytoban.Medianlog2.txt 
   # Remove temporary files
   rm ${NAME}.tmp.bed
   #rm ${NAME}.tmp
