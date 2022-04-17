@@ -26,7 +26,7 @@ do
   SAMTOOLSBAMLIST+=("${SAMTOOLSBAMDIR}/${BAMFILE}.sorted.samtools-deduped.sorted.bam")
 done
 # Generate the `baits.target.bed` and `baits.antitarget.bed` files using `baits.bed` being provided
-# baits.bed -> /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.add500bp.bed
+# baits.bed -> /drive3/cfDNA/selectors/Heme-STAMP_SEP2017.bed
 # Output: `baits.target.bed` and `baits.antitarget.bed`
 cnvkit.py autobin ${SAMTOOLSBAMLIST[@]} -t ${WRKDIR}/baits.bed -g ${WRKDIR}/access.hg19.bed
 # Tag the outputs with samtools
