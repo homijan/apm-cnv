@@ -1,9 +1,5 @@
 #!/bin/bash
 # Run `./pipeline-ichorcna.sh < /dev/null &`
-# Make sure to run 
-# 1) `generate-offtarget-index.sh`
-# 2) conda activate hmmcopy and then run `generate-wig.sh`
-# 3) conda activate cnvkit
 # Directory for ichorcna computations
 WRKDIR=$PWD
 # ichorCNA directory
