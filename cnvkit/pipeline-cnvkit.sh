@@ -59,3 +59,19 @@ do
     cnvkit.py diagram ${SAMPLE}.samtools.cnr -s ${SAMPLE}.samtools.cns -o ${SAMPLE}-diagram.samtools.pdf
   fi
 done
+
+# Genereate CNV output for tumor.cnn samples
+# Loop over all *.cnn in the results dir of tumors
+for i in ${WRKDIR}/results-cnn-tumor/*.samtools.antitargetcoverage.cnn
+do
+  # Trim the string to get a root name of the sample
+  SAMPLE="$(echo $i | sed 's/.samtools.antitargetcoverage.cnn//g')"
+  echo "Calling on sample: $SAMPLE"
+  ##  Using samtools-deduped on-target and off-target data
+  # For each tumor sample...
+  if [ ! -f ${SAMPLE}.samtools.call.cns ]; then
+    cnvkit.py call ${SAMPLE}.samtools.cns
+    # Move the call file to the result directory
+    mv ${SAMPLE}.samtools.cns ${WRKDIR}/results-cnn-tumor/
+  fi
+done
