@@ -10,6 +10,8 @@ CNA['trisomy12'] = ['chr12', '12p11.1', 33300001, 38200000]
 CNA['13q'] = ['chr13', '13q14.3', 50900001, 55300000]
 CNA['17p'] = ['chr17', '17p13.1', 6500001, 10700000]
 CNA['20q'] = ['chr20', '20q12', 37600001, 41700000]
+# Indexes to CNA values
+iChr = 0; iCyt = 1; iStart = 2; iEnd = 3
 
 # Define list of CNAs to loop over
 cnas = ['5q', '7q', 'trisomy8', '11q', 'trisomy12', '13q', '17p', '20q']

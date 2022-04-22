@@ -1,6 +1,6 @@
 from CNAdefs import *
 
-def cnvkitWeightedCN(fileName):
+def ichorcnaWeightedCN(fileName):
   debug = False
   w_cns = {}
   for cna in cnas:
@@ -14,7 +14,8 @@ def cnvkitWeightedCN(fileName):
       # Loop over all lines
       for line in f:
         cols = line.split()
-        chromosome = cols[0]; bedStart = int(cols[1]); bedEnd = int(cols[2]); log2 = cols[4]; cn = int(cols[5])
+        chromosome = 'chr'+str(cols[0]); bedStart = int(cols[1]); bedEnd = int(cols[2]); cn = int(cols[3]); cnCorrected = int(cols[6])
+      
         if (CNA[cna][iChr] == chromosome):
           # Segment smaller than CNA interval
           if (bedStart > CNA[cna][iStart] and bedEnd < CNA[cna][iEnd]):
@@ -23,7 +24,7 @@ def cnvkitWeightedCN(fileName):
             bedsizeTotal = bedsizeTotal + bedsize
             if (debug):
               print(f'CNA {cna}, chromosome {chromosome}, bed-start {bedStart}, bed-end {bedEnd}')
-              print(f'CNA {cna}, log2 {log2}, cn {cn}, bedsize {bedsize}')
+              print(f'CNA {cna}, cnCorrected {cnCorrected}, cn {cn}, bedsize {bedsize}')
           # CNA interval smaller than segment
           if (CNA[cna][iStart] >= bedStart and CNA[cna][iEnd] <= bedEnd):
             bedsize = CNA[cna][iEnd] - CNA[cna][iStart]
@@ -31,8 +32,8 @@ def cnvkitWeightedCN(fileName):
             bedsizeTotal = bedsizeTotal + bedsize
             if (debug):
               print(f'CNA {cna}, chromosome {chromosome}, bed-start {bedStart}, bed-end {bedEnd}')
-              print(f'CNA {cna}, log2 {log2}, cn {cn}, bedsize {bedsize}')
-          # Overlap of CNA interval and segment 
+              print(f'CNA {cna}, cnCorrected {cnCorrected}, cn {cn}, bedsize {bedsize}')
+          # Overlap of CNA interval and segment
           else:
             if (CNA[cna][iStart] >= bedStart and CNA[cna][iStart] <= bedEnd):
               bedsize = bedEnd - CNA[cna][iStart]
@@ -40,14 +41,19 @@ def cnvkitWeightedCN(fileName):
               bedsizeTotal = bedsizeTotal + bedsize
               if (debug):
                 print(f'CNA {cna}, chromosome {chromosome}, bed-start {bedStart}, bed-end {bedEnd}')
-                print(f'CNA {cna}, log2 {log2}, cn {cn}, bedsize {bedsize}')
+                print(f'CNA {cna}, cnCorrected {cnCorrected}, cn {cn}, bedsize {bedsize}')
             if (CNA[cna][iEnd] >= bedStart and CNA[cna][iEnd] <= bedEnd):
               bedsize = CNA[cna][iEnd] - bedStart
               cnTotal = cnTotal + cn * bedsize
               bedsizeTotal = bedsizeTotal + bedsize
               if (debug):
                 print(f'CNA {cna}, chromosome {chromosome}, bed-start {bedStart}, bed-end {bedEnd}')
-                print(f'CNA {cna}, log2 {log2}, cn {cn}, bedsize {bedsize}')
+                print(f'CNA {cna}, cnCorrected {cnCorrected}, cn {cn}, bedsize {bedsize}')
+    # Mark cn as anavailable
+    if (cnTotal==0):
+      print(f'CNA {cna}, weighted-mean-cn NA')
+    else:
+      print(f'CNA {cna}, weighted-mean-cn {cnTotal / bedsizeTotal}')
     w_cn = cnTotal / bedsizeTotal
     w_cns[cna] = w_cn
     #print(f'CNA {cna}, weighted-mean-cn {w_cn}')
