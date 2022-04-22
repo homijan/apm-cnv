@@ -42,7 +42,8 @@ for i in range(118):#range(Nrows-1):
     TP = 'TP'; FP = 'FP'; FN = 'FN'; TN = 'TN'; NA = 'NA'
     #TP = 87; FP = 37; FN = 36; TN = 86; NA = 62
     tcna_value = ref_sheet.cell(row, colNames[tcna]).value
-    if (tcna[1:3]=='tri'):
+    # tcna of loss is t5q, t7q, etc, and gain is ttrisomy, hence tcna[1] = 't'
+    if (tcna[1]=='t'):
       # Gain true-false-positive-negative logic
       if (tcna_value==1 and cn > 2.0):
         cnvkit_TFPN_sheet.cell(row, colNames[tcna]).value = TP 
