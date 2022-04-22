@@ -42,7 +42,7 @@ def updateSheets(row, colNames, w_cns, cn_sheet, TFPN_sheet):
       else:
         TFPN_sheet.cell(row, colNames[tcna]).value = NA
 
-ref_table_name = 'tables/CNV_final_R_totals.xlsx'
+ref_table_name = 'tables/CNV_allcases_r.xlsx'
 ref_book = openpyxl.load_workbook(ref_table_name, read_only=True)
 ref_sheet = ref_book.active
 
@@ -71,19 +71,19 @@ for i in range(Ncolumns):
   colName = ref_sheet.cell(1, col).value
   colNames[colName] = col
 
-for i in range(Nrows-1):
+for i in range(200):#range(Nrows-1):
   row = i + 2 
   HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value
   # cnvkit tables
   cnvkitCallSegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cns'
   w_cns = cnvkitWeightedCN(cnvkitCallSegFile)
   updateSheets(row, colNames, w_cns, cnvkit_cn_sheet, cnvkit_TFPN_sheet)
+  print(f'cnvkit {HLabel} {w_cns}')
   # ichorcna tables
-  ichorcnaSegFile = f'results-ichorcna/{HLabel}.cna.seg'
+  ichorcnaSegFile = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
   w_cns = ichorcnaWeightedCN(ichorcnaSegFile)
   updateSheets(row, colNames, w_cns, ichorcna_cn_sheet, ichorcna_TFPN_sheet)
-
-  print(f'{HLabel} {w_cns}')
+  print(f'ichorcna {HLabel} {w_cns}')
 # Save the updated excel tables
 cnvkit_cn_book.save(cnvkit_cn_table_name)
 cnvkit_TFPN_book.save(cnvkit_TFPN_table_name)

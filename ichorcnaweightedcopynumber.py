@@ -51,9 +51,10 @@ def ichorcnaWeightedCN(fileName):
                 print(f'CNA {cna}, cnCorrected {cnCorrected}, cn {cn}, bedsize {bedsize}')
     # Mark cn as anavailable
     if (cnTotal==0):
+      cnTotal = 'NA'
       print(f'CNA {cna}, weighted-mean-cn NA')
-    else:
-      print(f'CNA {cna}, weighted-mean-cn {cnTotal / bedsizeTotal}')
+    #else:
+    #  print(f'CNA {cna}, weighted-mean-cn {cnTotal / bedsizeTotal}')
     w_cn = cnTotal / bedsizeTotal
     w_cns[cna] = w_cn
     #print(f'CNA {cna}, weighted-mean-cn {w_cn}')
