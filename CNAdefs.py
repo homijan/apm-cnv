@@ -1,5 +1,7 @@
 # Describe CNAs
 CNA = {}
+CNA['1p'] = ['chr1', '1p32', 50700001, 61300000]
+CNA['1q'] = ['chr1', '1q21', 142600001, 155000000]
 CNA['5q'] = ['chr5', '5q31', 130600001, 144500000]
 CNA['mono5'] = ['chr5', '5p15.2', 9800001, 15000000]
 CNA['7q'] = ['chr7', '7q31', 107400001, 127100000]
@@ -14,4 +16,4 @@ CNA['20q'] = ['chr20', '20q12', 37600001, 41700000]
 iChr = 0; iCyt = 1; iStart = 2; iEnd = 3
 
 # Define list of CNAs to loop over
-cnas = ['5q', '7q', 'trisomy8', '11q', 'trisomy12', '13q', '17p', '20q']
+cnas = ['1p', '1q', '5q', '7q', 'trisomy8', '11q', 'trisomy12', '13q', '17p', '20q']

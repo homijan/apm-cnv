@@ -16,8 +16,8 @@ def updateSheets(row, colNames, w_cns, cn_sheet, TFPN_sheet):
     cn_sheet.cell(row, colNames[fcna]).value = cn
     cn_sheet.cell(row, colNames[tcna]).value = cn
     tcna_value = ref_sheet.cell(row, colNames[tcna]).value
-    # tcna of loss is t5q, t7q, etc, and gain is ttrisomy, hence tcna[1] = 't'
-    if (tcna[1]=='t'):
+    # tcna of loss is t5q, t7q, etc, and gain is t1q, ttrisomy8 , and ttrisomy12 (skip leading 't')
+    if (tcna[1:]=='1q' or (tcna[1:]=='trisomy8' or tcna[1:]=='trisomy12')):
       # Gain true-false-positive-negative logic
       if (tcna_value==1 and cn > 2.0):
         TFPN_sheet.cell(row, colNames[tcna]).value = TP 
