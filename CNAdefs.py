@@ -17,3 +17,8 @@ iChr = 0; iCyt = 1; iStart = 2; iEnd = 3
 
 # Define list of CNAs to loop over
 cnas = ['1p', '1q', '5q', '7q', 'trisomy8', '11q', 'trisomy12', '13q', '17p', '20q']
+
+# Different cnv file formats
+cnvkitFormat = 'cnvkitFormat'
+ichorcnaRegionFormat = 'ichorcnaRegionFormat'
+ichorcnaSegmentFormat = 'ichorcnaSegmentFormat'

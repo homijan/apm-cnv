@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import openpyxl
+from CNAdefs import *
+from weightedcopynumber import weightedCN
 from cnvkitweightedcopynumber import cnvkitWeightedCN
 from ichorcnaweightedcopynumber import ichorcnaWeightedCN
 
@@ -76,12 +78,16 @@ for i in range(200):#range(Nrows-1):
   HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value
   # cnvkit tables
   cnvkitCallSegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cns'
-  w_cns = cnvkitWeightedCN(cnvkitCallSegFile)
+  w_cns = weightedCN(cnvkitCallSegFile, cnvkitFormat)
+  #cnvkitCallRegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cnr'
+  #w_cns = weightedCN(cnvkitCallRegFile, cnvkitFormat)
+  #w_cns = cnvkitWeightedCN(cnvkitCallSegFile)
   updateSheets(row, colNames, w_cns, cnvkit_cn_sheet, cnvkit_TFPN_sheet)
   print(f'cnvkit {HLabel} {w_cns}')
   # ichorcna tables
-  ichorcnaSegFile = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
-  w_cns = ichorcnaWeightedCN(ichorcnaSegFile)
+  ichorcnaRegFile = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
+  w_cns = weightedCN(ichorcnaRegFile, ichorcnaRegionFormat)
+  #w_cns = ichorcnaWeightedCN(ichorcnaSegFile)
   updateSheets(row, colNames, w_cns, ichorcna_cn_sheet, ichorcna_TFPN_sheet)
   print(f'ichorcna {HLabel} {w_cns}')
 # Save the updated excel tables
