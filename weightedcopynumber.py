@@ -19,11 +19,10 @@ def weightedCN(fileName, fileFormat):
           chromosome = cols[0]; bedStart = int(cols[1]); bedEnd = int(cols[2]); log2 = cols[4]; cn = int(cols[5])
         elif (fileFormat==ichorcnaRegionFormat):
           # ichorcna .cna.seg
-          chromosome = 'chr'+str(cols[0]); bedStart = int(cols[1]); bedEnd = int(cols[2]); cn = int(cols[3]); cnCorrected = int(cols[6])
+          chromosome = 'chr'+str(cols[0]); bedStart = int(cols[1]); bedEnd = int(cols[2]); cn = int(cols[3])#; cnCorrected = int(cols[7])
         elif (fileFormat==ichorcnaSegmentFormat):
           # ichorcna .seg
-          # TODO check the cols indexes
-          chromosome = 'chr'+str(cols[0]); bedStart = int(cols[1]); bedEnd = int(cols[2]); cn = int(cols[3]); cnCorrected = int(cols[6])
+          chromosome = 'chr'+str(cols[1]); bedStart = int(cols[2]); bedEnd = int(cols[3]); cn = int(cols[5])
       
         if (CNA[cna][iChr] == chromosome):
           # Segment smaller than CNA interval

@@ -3,12 +3,10 @@
 import openpyxl
 from CNAdefs import *
 from weightedcopynumber import weightedCN
-from cnvkitweightedcopynumber import cnvkitWeightedCN
-from ichorcnaweightedcopynumber import ichorcnaWeightedCN
 
+# Clinical result of karyotype or fish
+TP = 'TP'; FP = 'FP'; FN = 'FN'; TN = 'TN'; NA = 'NA'
 def updateSheets(row, colNames, w_cns, cn_sheet, TFPN_sheet):
-  # Clinical result of karyotype or fish
-  TP = 'TP'; FP = 'FP'; FN = 'FN'; TN = 'TN'; NA = 'NA'
   for w_cn in w_cns: 
     cn = w_cns[w_cn]
     kcna = f'k{w_cn}'
@@ -44,25 +42,68 @@ def updateSheets(row, colNames, w_cns, cn_sheet, TFPN_sheet):
       else:
         TFPN_sheet.cell(row, colNames[tcna]).value = NA
 
+def getSEtable(cnas, TFPN_sheet):
+  # Names to indexes of TFPN sheet
+  colNames = {}
+  for i in range(TFPN_sheet.max_column):
+    col = i + 1
+    colName = TFPN_sheet.cell(1, col).value
+    colNames[colName] = col
+  # Create table
+  table = {}
+  table['names'] = ['Lesion', 'FN', 'FP', 'TN', 'TP', 'Sensitivity', 'Specificity', 'PPV', 'NPV']
+  for cna in cnas: 
+    tcna = f't{cna}'
+    col = colNames[tcna]
+    FNcount = 0; FPcount = 0; TNcount = 0; TPcount = 0
+    for i in range(200):
+      row = i + 2
+      if (TFPN_sheet.cell(row, col).value==FN):
+        FNcount = FNcount + 1
+      elif (TFPN_sheet.cell(row, col).value==FP):
+        FPcount = FPcount + 1 
+      elif (TFPN_sheet.cell(row, col).value==TN):
+        TNcount = TNcount + 1 
+      elif (TFPN_sheet.cell(row, col).value==TP):
+        TPcount = TPcount + 1 
+    table[tcna] = [cna, FNcount, FPcount, TNcount, TPcount, TPcount / (TPcount + FNcount), TNcount/(TNcount + FPcount), TPcount/(TPcount + FPcount), TNcount/(TNcount + FNcount)] 
+  return table
+
 ref_table_name = 'tables/CNV_allcases_r.xlsx'
 ref_book = openpyxl.load_workbook(ref_table_name, read_only=True)
 ref_sheet = ref_book.active
 
-cnvkit_cn_table_name = 'tables/CNV_copynumber_cnvkit.xlsx'
-cnvkit_cn_book = openpyxl.load_workbook(cnvkit_cn_table_name)
-cnvkit_cn_sheet = cnvkit_cn_book.active
+cnvkit_segment_cn_table_name = 'tables/CNV_copynumber_cnvkit_segment.xlsx'
+cnvkit_segment_cn_book = openpyxl.load_workbook(cnvkit_segment_cn_table_name)
+cnvkit_segment_cn_sheet = cnvkit_segment_cn_book.active
 
-cnvkit_TFPN_table_name = 'tables/CNV_TFPN_cnvkit.xlsx'
-cnvkit_TFPN_book = openpyxl.load_workbook(cnvkit_TFPN_table_name)
-cnvkit_TFPN_sheet = cnvkit_TFPN_book.active
+cnvkit_segment_TFPN_table_name = 'tables/CNV_TFPN_cnvkit_segment.xlsx'
+cnvkit_segment_TFPN_book = openpyxl.load_workbook(cnvkit_segment_TFPN_table_name)
+cnvkit_segment_TFPN_sheet = cnvkit_segment_TFPN_book.active
 
-ichorcna_cn_table_name = 'tables/CNV_copynumber_ichorcna.xlsx'
-ichorcna_cn_book = openpyxl.load_workbook(ichorcna_cn_table_name)
-ichorcna_cn_sheet = ichorcna_cn_book.active
+cnvkit_region_cn_table_name = 'tables/CNV_copynumber_cnvkit_region.xlsx'
+cnvkit_region_cn_book = openpyxl.load_workbook(cnvkit_region_cn_table_name)
+cnvkit_region_cn_sheet = cnvkit_region_cn_book.active
 
-ichorcna_TFPN_table_name = 'tables/CNV_TFPN_ichorcna.xlsx'
-ichorcna_TFPN_book = openpyxl.load_workbook(ichorcna_TFPN_table_name)
-ichorcna_TFPN_sheet = ichorcna_TFPN_book.active
+cnvkit_region_TFPN_table_name = 'tables/CNV_TFPN_cnvkit_region.xlsx'
+cnvkit_region_TFPN_book = openpyxl.load_workbook(cnvkit_region_TFPN_table_name)
+cnvkit_region_TFPN_sheet = cnvkit_region_TFPN_book.active
+
+ichorcna_segment_cn_table_name = 'tables/CNV_copynumber_ichorcna_segment.xlsx'
+ichorcna_segment_cn_book = openpyxl.load_workbook(ichorcna_segment_cn_table_name)
+ichorcna_segment_cn_sheet = ichorcna_segment_cn_book.active
+
+ichorcna_segment_TFPN_table_name = 'tables/CNV_TFPN_ichorcna_segment.xlsx'
+ichorcna_segment_TFPN_book = openpyxl.load_workbook(ichorcna_segment_TFPN_table_name)
+ichorcna_segment_TFPN_sheet = ichorcna_segment_TFPN_book.active
+
+ichorcna_region_cn_table_name = 'tables/CNV_copynumber_ichorcna_region.xlsx'
+ichorcna_region_cn_book = openpyxl.load_workbook(ichorcna_region_cn_table_name)
+ichorcna_region_cn_sheet = ichorcna_region_cn_book.active
+
+ichorcna_region_TFPN_table_name = 'tables/CNV_TFPN_ichorcna_region.xlsx'
+ichorcna_region_TFPN_book = openpyxl.load_workbook(ichorcna_region_TFPN_table_name)
+ichorcna_region_TFPN_sheet = ichorcna_region_TFPN_book.active
 
 Nrows = ref_sheet.max_row
 Ncolumns = ref_sheet.max_column
@@ -73,25 +114,46 @@ for i in range(Ncolumns):
   colName = ref_sheet.cell(1, col).value
   colNames[colName] = col
 
-for i in range(200):#range(Nrows-1):
-  row = i + 2 
-  HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value
-  # cnvkit tables
-  cnvkitCallSegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cns'
-  w_cns = weightedCN(cnvkitCallSegFile, cnvkitFormat)
-  #cnvkitCallRegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cnr'
-  #w_cns = weightedCN(cnvkitCallRegFile, cnvkitFormat)
-  #w_cns = cnvkitWeightedCN(cnvkitCallSegFile)
-  updateSheets(row, colNames, w_cns, cnvkit_cn_sheet, cnvkit_TFPN_sheet)
-  print(f'cnvkit {HLabel} {w_cns}')
-  # ichorcna tables
-  ichorcnaRegFile = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
-  w_cns = weightedCN(ichorcnaRegFile, ichorcnaRegionFormat)
-  #w_cns = ichorcnaWeightedCN(ichorcnaSegFile)
-  updateSheets(row, colNames, w_cns, ichorcna_cn_sheet, ichorcna_TFPN_sheet)
-  print(f'ichorcna {HLabel} {w_cns}')
-# Save the updated excel tables
-cnvkit_cn_book.save(cnvkit_cn_table_name)
-cnvkit_TFPN_book.save(cnvkit_TFPN_table_name)
-ichorcna_cn_book.save(ichorcna_cn_table_name)
-ichorcna_TFPN_book.save(ichorcna_TFPN_table_name)
+updateTables = False
+if (updateTables):
+  for i in range(200):#range(Nrows-1):
+    row = i + 2 
+    HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value
+    # cnvkit tables
+    cnvkitCallSegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cns'
+    w_cns = weightedCN(cnvkitCallSegFile, cnvkitFormat)
+    updateSheets(row, colNames, w_cns, cnvkit_segment_cn_sheet, cnvkit_segment_TFPN_sheet)
+    cnvkitCallRegFile = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cnr'
+    w_cns = weightedCN(cnvkitCallRegFile, cnvkitFormat)
+    updateSheets(row, colNames, w_cns, cnvkit_region_cn_sheet, cnvkit_region_TFPN_sheet)
+    print(f'cnvkit {HLabel} {w_cns}')
+    # ichorcna tables
+    ichorcnaSegFile = f'ichorcna/results-ichorcna/{HLabel}.seg'
+    w_cns = weightedCN(ichorcnaSegFile, ichorcnaSegmentFormat)
+    updateSheets(row, colNames, w_cns, ichorcna_segment_cn_sheet, ichorcna_segment_TFPN_sheet)
+    ichorcnaRegFile = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
+    w_cns = weightedCN(ichorcnaRegFile, ichorcnaRegionFormat)
+    updateSheets(row, colNames, w_cns, ichorcna_region_cn_sheet, ichorcna_region_TFPN_sheet)
+    print(f'ichorcna {HLabel} {w_cns}')
+# Save the updated excel table
+cnvkit_segment_cn_book.save(cnvkit_segment_cn_table_name)
+cnvkit_segment_TFPN_book.save(cnvkit_segment_TFPN_table_name)
+cnvkit_region_cn_book.save(cnvkit_region_cn_table_name)
+cnvkit_region_TFPN_book.save(cnvkit_region_TFPN_table_name)
+ichorcna_segment_cn_book.save(ichorcna_segment_cn_table_name)
+ichorcna_segment_TFPN_book.save(ichorcna_segment_TFPN_table_name)
+ichorcna_region_cn_book.save(ichorcna_region_cn_table_name)
+ichorcna_region_TFPN_book.save(ichorcna_region_TFPN_table_name)
+
+# TEST
+TFPN_sheets = {}
+TFPN_sheets['cnvkit-segment'] = cnvkit_segment_TFPN_sheet
+TFPN_sheets['cnvkit-region'] = cnvkit_region_TFPN_sheet
+TFPN_sheets['ichorcna-segment'] = ichorcna_segment_TFPN_sheet
+TFPN_sheets['ichorcna-region'] = ichorcna_region_TFPN_sheet
+for method in TFPN_sheets:
+  tableSE = getSEtable(cnas, TFPN_sheets[method])
+  print(f'method {method}')
+  for cna in cnas:
+    tcna = 't'+cna
+    print(f'cna {tableSE[tcna][0]}, sens {tableSE[tcna][5]}, spec {tableSE[tcna][6]}')
