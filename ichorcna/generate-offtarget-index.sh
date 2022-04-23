@@ -3,9 +3,8 @@
 WRKDIR=$PWD
 # Directory providing HEMESTAMP data
 DATADIR="/drive3/dkurtz/HEMESTAMP"
-# Reference bed file for targeted regions from HEMESTAMP
+# Reference bed file for targeted regions from HEMESTAMP (ichorCNA performs better with add500bp selector).
 REFBED="/drive3/cfDNA/selectors/Heme-STAMP_SEP2017.add500bp.bed"
-#REFBED="/drive3/cfDNA/selectors/Heme-STAMP_SEP2017.bed"
 # Loop over HEMESTAMP labels
 NORMALSTART=201
 for i in {1..251}
