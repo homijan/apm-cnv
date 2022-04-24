@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import openpyxl
+import sys
 from CNAdefs import *
 from weightedcopynumber import weightedCN
 
@@ -114,7 +115,11 @@ for i in range(Ncolumns):
   colName = ref_sheet.cell(1, col).value
   colNames[colName] = col
 
+# TODO add comments
 updateTables = False
+if (len(sys.argv)>=2):
+  if (sys.argv[1]=='yes'):
+    updateTables = True
 if (updateTables):
   for i in range(200):#range(Nrows-1):
     row = i + 2 
@@ -135,15 +140,15 @@ if (updateTables):
     w_cns = weightedCN(ichorcnaRegFile, ichorcnaRegionFormat)
     updateSheets(row, colNames, w_cns, ichorcna_region_cn_sheet, ichorcna_region_TFPN_sheet)
     print(f'ichorcna {HLabel} {w_cns}')
-# Save the updated excel table
-cnvkit_segment_cn_book.save(cnvkit_segment_cn_table_name)
-cnvkit_segment_TFPN_book.save(cnvkit_segment_TFPN_table_name)
-cnvkit_region_cn_book.save(cnvkit_region_cn_table_name)
-cnvkit_region_TFPN_book.save(cnvkit_region_TFPN_table_name)
-ichorcna_segment_cn_book.save(ichorcna_segment_cn_table_name)
-ichorcna_segment_TFPN_book.save(ichorcna_segment_TFPN_table_name)
-ichorcna_region_cn_book.save(ichorcna_region_cn_table_name)
-ichorcna_region_TFPN_book.save(ichorcna_region_TFPN_table_name)
+  # Save the updated excel table
+  cnvkit_segment_cn_book.save(cnvkit_segment_cn_table_name)
+  cnvkit_segment_TFPN_book.save(cnvkit_segment_TFPN_table_name)
+  cnvkit_region_cn_book.save(cnvkit_region_cn_table_name)
+  cnvkit_region_TFPN_book.save(cnvkit_region_TFPN_table_name)
+  ichorcna_segment_cn_book.save(ichorcna_segment_cn_table_name)
+  ichorcna_segment_TFPN_book.save(ichorcna_segment_TFPN_table_name)
+  ichorcna_region_cn_book.save(ichorcna_region_cn_table_name)
+  ichorcna_region_TFPN_book.save(ichorcna_region_TFPN_table_name)
 
 # TEST
 TFPN_sheets = {}
@@ -153,7 +158,18 @@ TFPN_sheets['ichorcna-segment'] = ichorcna_segment_TFPN_sheet
 TFPN_sheets['ichorcna-region'] = ichorcna_region_TFPN_sheet
 for method in TFPN_sheets:
   tableSE = getSEtable(cnas, TFPN_sheets[method])
-  print(f'method {method}')
-  for cna in cnas:
-    tcna = 't'+cna
-    print(f'cna {tableSE[tcna][0]}, sens {tableSE[tcna][5]}, spec {tableSE[tcna][6]}')
+  #print(f'method {method}')
+  tableFileName = method+'-tableSE.txt'
+  print(f'Writing table {tableFileName}')
+  with open(tableFileName, 'w') as f:
+    for item in tableSE['names']:
+      f.write(str(item))
+      f.write(' ')
+    f.write('\n')
+    for cna in cnas:
+      tcna = 't'+cna
+      for item in tableSE[tcna]:
+        f.write(str(item))
+        f.write(' ')
+      f.write('\n')
+      #print(f'cna {tableSE[tcna][0]}, sens {tableSE[tcna][5]}, spec {tableSE[tcna][6]}')
