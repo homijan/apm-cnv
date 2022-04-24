@@ -43,7 +43,7 @@ def updateSheets(row, colNames, w_cns, cn_sheet, TFPN_sheet):
       else:
         TFPN_sheet.cell(row, colNames[tcna]).value = NA
 
-def getSEtable(cnas, TFPN_sheet):
+def getSEtable(diagnosis, cnas, TFPN_sheet):
   # Names to indexes of TFPN sheet
   colNames = {}
   for i in range(TFPN_sheet.max_column):
@@ -59,16 +59,32 @@ def getSEtable(cnas, TFPN_sheet):
     FNcount = 0; FPcount = 0; TNcount = 0; TPcount = 0
     for i in range(200):
       row = i + 2
-      if (TFPN_sheet.cell(row, col).value==FN):
+      if (TFPN_sheet.cell(row, col).value==FN and TFPN_sheet.cell(row, colNames['Diagnosis']).value==diagnosis):
         FNcount = FNcount + 1
-      elif (TFPN_sheet.cell(row, col).value==FP):
+      elif (TFPN_sheet.cell(row, col).value==FP and TFPN_sheet.cell(row, colNames['Diagnosis']).value==diagnosis):
         FPcount = FPcount + 1 
-      elif (TFPN_sheet.cell(row, col).value==TN):
+      elif (TFPN_sheet.cell(row, col).value==TN and TFPN_sheet.cell(row, colNames['Diagnosis']).value==diagnosis):
         TNcount = TNcount + 1 
-      elif (TFPN_sheet.cell(row, col).value==TP):
+      elif (TFPN_sheet.cell(row, col).value==TP and TFPN_sheet.cell(row, colNames['Diagnosis']).value==diagnosis):
         TPcount = TPcount + 1 
     table[tcna] = [cna, FNcount, FPcount, TNcount, TPcount, TPcount / (TPcount + FNcount), TNcount/(TNcount + FPcount), TPcount/(TPcount + FPcount), TNcount/(TNcount + FNcount)] 
   return table
+
+def writeSETable(diagnosis, cnas, TFPN_sheet, tableFileName):
+  tableSE = getSEtable(diagnosis, cnas, TFPN_sheet)
+  #print(f'method {method}') 
+  print(f'Writing table {tableFileName}')
+  with open(tableFileName, 'w') as f:
+    for item in tableSE['names']:
+      f.write(str(item))
+      f.write(' ')
+    f.write('\n')
+    for cna in cnas:
+      tcna = 't'+cna
+      for item in tableSE[tcna]:
+        f.write(str(item))
+        f.write(' ')
+      f.write('\n')
 
 ref_table_name = 'tables/CNV_allcases_r.xlsx'
 ref_book = openpyxl.load_workbook(ref_table_name, read_only=True)
@@ -150,26 +166,22 @@ if (updateTables):
   ichorcna_region_cn_book.save(ichorcna_region_cn_table_name)
   ichorcna_region_TFPN_book.save(ichorcna_region_TFPN_table_name)
 
-# TEST
+# Writing the resulting tables
 TFPN_sheets = {}
 TFPN_sheets['cnvkit-segment'] = cnvkit_segment_TFPN_sheet
 TFPN_sheets['cnvkit-region'] = cnvkit_region_TFPN_sheet
 TFPN_sheets['ichorcna-segment'] = ichorcna_segment_TFPN_sheet
 TFPN_sheets['ichorcna-region'] = ichorcna_region_TFPN_sheet
 for method in TFPN_sheets:
-  tableSE = getSEtable(cnas, TFPN_sheets[method])
-  #print(f'method {method}')
-  tableFileName = method+'-tableSE.txt'
-  print(f'Writing table {tableFileName}')
-  with open(tableFileName, 'w') as f:
-    for item in tableSE['names']:
-      f.write(str(item))
-      f.write(' ')
-    f.write('\n')
-    for cna in cnas:
-      tcna = 't'+cna
-      for item in tableSE[tcna]:
-        f.write(str(item))
-        f.write(' ')
-      f.write('\n')
-      #print(f'cna {tableSE[tcna][0]}, sens {tableSE[tcna][5]}, spec {tableSE[tcna][6]}')
+  # Define CLL diagnosis, the list of its CNAs, and the name of the written table
+  diagnosis = 'CLL'; cnas = ['11q', '13q', '17p', 'trisomy12'] 
+  tableFileName = 'tables/'+method+'-'+diagnosis+'-tableSE.txt'
+  writeSETable(diagnosis, cnas, TFPN_sheets[method], tableFileName)
+  # Define MDS diagnosis, the list of its CNAs, and the name of the written table
+  diagnosis = 'MDS'; cnas = ['5q', '7q', '20q', 'trisomy8'] 
+  tableFileName = 'tables/'+method+'-'+diagnosis+'-tableSE.txt'
+  writeSETable(diagnosis, cnas, TFPN_sheets[method], tableFileName)
+  # Define MM diagnosis, the list of its CNAs, and the name of the written table
+  diagnosis = 'MM'; cnas = ['1p', '1q', '13q', '17p'] 
+  tableFileName = 'tables/'+method+'-'+diagnosis+'-tableSE.txt'
+  writeSETable(diagnosis, cnas, TFPN_sheets[method], tableFileName)
