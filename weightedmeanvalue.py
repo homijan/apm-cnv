@@ -2,8 +2,8 @@ from CNAdefs import *
 import pandas as pd
 
 # Obtain weighted-mean value based on overlap of clinical deletion/gain and CNV intervals in bed coordinates
-def canary_zscore(fileName):
-  chrColName = "#chr"; startColName = "start"; endColName = "end"; valueColName = "gc.corrected.norm.log.std.index.zWeighted.Final"
+def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName):
+  #chrColName = "#chr"; startColName = "start"; endColName = "end"; valueColName = "gc.corrected.norm.log.std.index.zWeighted.Final"
   # Read the data frame
   df = pd.read_csv(fileName,sep="\t")
   debug = False
