@@ -2,16 +2,20 @@ from CNAdefs import *
 import pandas as pd
 
 # Obtain weighted-mean value based on overlap of clinical deletion/gain and CNV intervals in bed coordinates
-def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName):
-  #chrColName = "#chr"; startColName = "start"; endColName = "end"; valueColName = "gc.corrected.norm.log.std.index.zWeighted.Final"
+def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName, intChromValue):
   # Read the data frame
   df = pd.read_csv(fileName,sep="\t")
-  debug = False
+  debug = True
   w_values = {}
   for cna in cnas:
     if (debug):
       print(f'CNA bed interval [{CNA[cna][iStart]}, {CNA[cna][iEnd]}]')
-    dfChr = df[df[chrColName]==CNA[cna][iChr]]
+    if (not intChromValue):
+      chromCNA = CNA[cna][iChr]
+    else:
+      chromCNA = int((CNA[cna][iChr])[3:])
+    # Extract part of the table corresponding to the chromosome
+    dfChr = df[df[chrColName]==chromCNA]
     valueTotal = 0
     bedsizeTotal = 0 #1e-32 # Numerical zero
     for index, row in dfChr.iterrows():
@@ -56,7 +60,7 @@ def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColN
               print(f'CNA {cna}, chromosome {chromosome}, bed-start {bedStart}, bed-end {bedEnd}')
               print(f'CNA {cna}, value {value}, bedsize {bedsize}')   
     # Mark value as anavailable
-    if (valueTotal==0):
+    if (bedsizeTotal==0):
       w_value = 'NA'
       print(f'CNA {cna}, weighted-mean-value NA')
     else:

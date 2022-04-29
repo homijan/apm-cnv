@@ -69,7 +69,8 @@ def getSEtable(diagnosis, cnas, TFPN_sheet):
         TNcount = TNcount + 1 
       elif (TFPN_sheet.cell(row, col).value==TP and TFPN_sheet.cell(row, colNames['Diagnosis']).value==diagnosis):
         TPcount = TPcount + 1 
-    table[tcna] = [cna, FNcount, FPcount, TNcount, TPcount, TPcount / (TPcount + FNcount), TNcount/(TNcount + FPcount), TPcount/(TPcount + FPcount), TNcount/(TNcount + FNcount)] 
+    eps = 1e-32
+    table[tcna] = [cna, FNcount, FPcount, TNcount, TPcount, TPcount / (TPcount + FNcount + eps), TNcount / (TNcount + FPcount + eps), TPcount / (TPcount + FPcount + eps), TNcount / (TNcount + FNcount + eps)] 
   return table
 
 def writeSETable(diagnosis, cnas, TFPN_sheet, tableFileName):
@@ -92,11 +93,11 @@ ref_table_name = 'tables/CNV_allcases_r.xlsx'
 ref_book = openpyxl.load_workbook(ref_table_name, read_only=True)
 ref_sheet = ref_book.active
 
-canary_z_table_name = 'tables/CNV_copynumber_canary.xlsx'
+canary_z_table_name = 'tables/CNV_zscore.xlsx'
 canary_z_book = openpyxl.load_workbook(canary_z_table_name)
 canary_z_sheet = canary_z_book.active
 
-canary_TFPN_table_name = 'tables/CNV_TFPN_canary.xlsx'
+canary_TFPN_table_name = 'tables/CNV_TFPN.xlsx'
 canary_TFPN_book = openpyxl.load_workbook(canary_TFPN_table_name)
 canary_TFPN_sheet = canary_TFPN_book.active
 
@@ -117,12 +118,16 @@ if (len(sys.argv)>=2):
 if (updateTables):
   for i in range(200):#range(Nrows-1):
     row = i + 2 
-    HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value
-    #fileName = 'canary-python/results-canary/results-canary-mse/Sample_HSTAMP0054-T1_Tumor.cnvZscores'
-    fileName = 'canary-python/results-canary/results-canary-mse/Sample_{HLabel}-T1_Tumor.cnvZscores'
-    # Colun names used in canary output
-    chrColName = "#chr"; startColName = "start"; endColName = "end"; valueColName = "gc.corrected.norm.log.std.index.zWeighted.Final"
-    w_zscores = weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName)
+    HLabel = ref_sheet.cell(row, colNames['HSTAMP_Label']).value 
+    # File name and column names used in canary-mse output
+    # fileName = f'canary-python/results-canary/results-canary-mse/Sample_{HLabel}-T1_Tumor.cnvZscores'
+    #chrColName = "#chr"; intChromValue = False; startColName = "start"; endColName = "end"; valueColName = "gc.corrected.norm.log.std.index.zWeighted.Final"
+    # File name and column names used in canary-kurtz output
+    #fileName = f'/drive3/dkurtz/HEMESTAMP/CANARy/samples/output/Sample_{HLabel}-T1_Tumor.SegmentedGenome.cytobands-noXY.on-off-combined.txt'
+    fileName = f'/drive3/dkurtz/HEMESTAMP/CANARy/samples/output/Sample_{HLabel}-T1_Tumor.SegmentedGenome.arms.on-off-combined.txt'
+    chrColName = "chrNum"; intChromValue = True; startColName = "Start"; endColName = "End"; valueColName = "combinedStoufferZL2CNR"
+    # Obtain zscore for every cna from CNAdefs
+    w_zscores = weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName, intChromValue)
     updateSheets(row, colNames, w_zscores, canary_z_sheet, canary_TFPN_sheet)
     print(f'canary {HLabel} {w_zscores}')
   # Save the updated excel table
@@ -131,7 +136,8 @@ if (updateTables):
 
 # Writing the resulting tables
 TFPN_sheets = {}
-TFPN_sheets['canary'] = canary_TFPN_sheet
+#TFPN_sheets['canary-mse'] = canary_TFPN_sheet
+TFPN_sheets['canary-kurtz-arm'] = canary_TFPN_sheet
 for method in TFPN_sheets:
   # Define CLL diagnosis, the list of its CNAs, and the name of the written table
   diagnosis = 'CLL'; cnas = ['11q', '13q', '17p', 'trisomy12'] 
