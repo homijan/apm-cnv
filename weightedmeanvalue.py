@@ -2,10 +2,10 @@ from CNAdefs import *
 import pandas as pd
 
 # Obtain weighted-mean value based on overlap of clinical deletion/gain and CNV intervals in bed coordinates
-def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName, intChromValue):
+def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName, intChromValue, defaultValue='NA'):
   # Read the data frame
   df = pd.read_csv(fileName,sep="\t")
-  debug = True
+  debug = False
   w_values = {}
   for cna in cnas:
     if (debug):
@@ -61,8 +61,8 @@ def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColN
               print(f'CNA {cna}, value {value}, bedsize {bedsize}')   
     # Mark value as anavailable
     if (bedsizeTotal==0):
-      w_value = 'NA'
-      print(f'CNA {cna}, weighted-mean-value NA')
+      w_value = defaultValue
+      print(f'CNA {cna}, weighted-mean-value NA (returning {defaultValue})')
     else:
       print(f'CNA {cna}, weighted-mean-value {valueTotal / bedsizeTotal}')
       w_value = valueTotal / bedsizeTotal
