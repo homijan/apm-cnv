@@ -151,15 +151,31 @@ if (updateTables):
       fileName = f'wisecondor/testSamples/Sample_{HLabel}-T1_Tumor.sorted.samtools-deduped.sorted.offtarget.std.txt'
       chrColName = "chrNum"; intChromValue = True; startColName = "Start"; endColName = "End"; valueColName = "z-score"; defaultValue = 0
       gainThreshold = 1.96; deletionThreshold = -1.96
-    # File name and column names used in cnvkit output. Note that cnvkit uses copynumber rather than z-score
-    elif (cnvMethod=='cnvkit'):
+    # File name and column names used in cnvki-cnst output. Note that cnvkit uses copynumber rather than z-score
+    elif (cnvMethod=='cnvkit-cns'):
       fileName = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cns'
       chrColName = "chromosome"; intChromValue = False; startColName = "start"; endColName = "end"; valueColName = "cn"
       gainThreshold = 2.0; deletionThreshold = 2.0
+    # File name and column names used in cnvkit-cnr output. Note that cnvkit uses copynumber rather than z-score
+    elif (cnvMethod=='cnvkit-cnr'):
+      fileName = f'cnvkit/results-cnn-tumor/Sample_{HLabel}-T1_Tumor.samtools.call.cnr'
+      chrColName = "chromosome"; intChromValue = False; startColName = "start"; endColName = "end"; valueColName = "cn"
+      gainThreshold = 2.0; deletionThreshold = 2.0
+   # File name and column names used in ichorcna-cns output. Note that ichorcna uses copynumber rather than z-score
+    elif (cnvMethod=='ichorcna-cns'):
+      fileName = f'ichorcna/results-ichorcna/{HLabel}.seg'
+      chrColName = "chr"; intChromValue = True; startColName = "start"; endColName = "end"; valueColName = "copy.number"
+      gainThreshold = 2.0; deletionThreshold = 2.0
+   # File name and column names used in ichorcna-cnr output. Note that ichorcna uses copynumber rather than z-score
+    elif (cnvMethod=='ichorcna-cnr'):
+      fileName = f'ichorcna/results-ichorcna/{HLabel}.cna.seg'
+      chrColName = "chr"; intChromValue = True; startColName = "start"; endColName = "end"; valueColName = f'{HLabel}.copy.number'
+      gainThreshold = 2.0; deletionThreshold = 2.0
     else:
-      print(f'Provided cnv method {cnvMethod} not in the supported list: canary-kurtz-cytobands, canary-kurtz-arms, canary-mse-cytobands, canary-mse-arms, wisecondor')
+      print(f'Provided cnv method {cnvMethod} not in the supported list: canary-kurtz-cytobands, canary-kurtz-arms, canary-mse-cytobands, canary-mse-arms, wisecondor, cnvkit-cns, cnvkit-cnr, ichorcna-cns,ichorcna-cnr')
 
     # Obtain zscore for every cna from CNAdefs
+    print(f'fileName: {fileName}')
     w_zscores = weightedMeanValues(fileName, chrColName, startColName, endColName, valueColName, intChromValue, defaultValue)
     updateSheets(row, colNames, w_zscores, z_sheet, TFPN_sheet, gainThreshold, deletionThreshold)
     print(f'{cnvMethod} {HLabel} {w_zscores}')

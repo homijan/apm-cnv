@@ -6,16 +6,27 @@ def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColN
   # Read the data frame
   df = pd.read_csv(fileName,sep="\t")
   debug = False
+  if (debug):
+    print(df)
   w_values = {}
   for cna in cnas:
     if (debug):
-      print(f'CNA bed interval [{CNA[cna][iStart]}, {CNA[cna][iEnd]}]')
-    if (not intChromValue):
-      chromCNA = CNA[cna][iChr]
-    else:
+      print(f'CNA chromosome {CNA[cna][iChr]}, bed interval [{CNA[cna][iStart]}, {CNA[cna][iEnd]}]')
+    ###################################################################################################################
+    # Gymnastics with sub-dataframe for a given chromosome
+    # Refer to the chromosome as number (integer)
+    if (intChromValue):
       chromCNA = int((CNA[cna][iChr])[3:])
+    else:
+      chromCNA = CNA[cna][iChr]
+    #print(df.dtypes[chrColName])
     # Extract part of the table corresponding to the chromosome
-    dfChr = df[df[chrColName]==chromCNA]
+    # TODO: better solution needed. For now, we expect column type is object if int and string are mixed, e.g. ichorCNA
+    if (df.dtypes[chrColName]==object):
+      dfChr = df[df[chrColName]==str(chromCNA)]
+    else: # Correct type otherwise
+      dfChr = df[df[chrColName]==chromCNA]
+    ###################################################################################################################
     valueTotal = 0
     bedsizeTotal = 0 #1e-32 # Numerical zero
     for index, row in dfChr.iterrows():
@@ -64,7 +75,7 @@ def weightedMeanValues(fileName, chrColName, startColName, endColName, valueColN
       w_value = defaultValue
       print(f'CNA {cna}, weighted-mean-value NA (returning {defaultValue})')
     else:
-      print(f'CNA {cna}, weighted-mean-value {valueTotal / bedsizeTotal}')
+      #print(f'CNA {cna}, weighted-mean-value {valueTotal / bedsizeTotal}')
       w_value = valueTotal / bedsizeTotal
     w_values[cna] = w_value
     #print(f'CNA {cna}, weighted-mean-value {w_value}')
